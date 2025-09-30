@@ -5,7 +5,9 @@
 
 
 #region INIT DATA
+import os
 from posixpath import ismount
+from datetime import datetime
 
 
 company = {
@@ -56,7 +58,9 @@ bank_account = {
 
 
 #region FUNCTIONS
-# 
+def clear_screen():
+    os.system('clear')
+
 
 
 def payment(bank_account):
@@ -71,15 +75,22 @@ def payment(bank_account):
         if ammount <= 0:
             print('Iznos mora biti veci od 0 €, upisi exit za izlazak')
             continue
-        break
-    
-    bank_account['balance'] += ammount
-    print(f'Uplaceno: {ammount} EUR | Novo stanje: {bank_account['balance']} EUR')
-    return True
-    
-    
+        
+        
+        transaction = {
+                'type': 'UPLATA',
+                'amount': ammount,
+                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'balance_after': bank_account['balance'] + ammount
+            }
+
+        bank_account[transactions].append(transaction)
 
 
+        bank_account['balance'] += ammount
+        print(f'Uplaceno: {ammount} EUR | Novo stanje: {bank_account['balance']} EUR')
+        return True
+    
 
 
 
