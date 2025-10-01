@@ -52,15 +52,37 @@ company = {
 }
 
 #endregion
+def transform_key(key: str) -> None:
+    keys = key.split('_')
+    if len(keys) == 1:
+        return keys[0].capitalize() 
+    else:
+        text = ''
+        for index, element in enumerate(keys):
+            if index == 0:
+                text += f'{element.capitalize()} '
+            elif index == len(keys) - 1:
+                text += f'{element} '
+            else:
+                text += f'{element} '
+        return text
 
-# dohvat id broja
+
+def print_dict(dictionary: dict = {}) -> None:
+    if dictionary != {}:
+        for key, value in dictionary.items():
+            key = transform_key(key)
+
+            if type(value) == dict:
+                print()
+                print(key)
+                print_dict(value)
+            else:   
+                row = f'{key:<15} {str(value):<25}'
+                print(row)
+
+    else:
+        print('Rijecnik nema niti jedan element. ')
 
 
-def get_id(entity: dict) -> int:
-    return entity['id']
-
-company_id = get_id(company)
-bank_account_id = get_id(bank_account)
-
-print(company_id)
-print(bank_account_id)
+print_dict(company)
