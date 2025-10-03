@@ -10,19 +10,6 @@ from posixpath import ismount
 from datetime import datetime
 
 
-company = {
-    'id': 1,
-    'name': 'ABC Software d.o.o.',
-    'tax_id': '01234567890',
-    'hq': {
-        'street': 'Duga ulica 15',
-        'postal_code': '10290',
-        'city': 'Zapresic',
-        'country': 'Hrvatska'
-    },
-    'email': 'info@abc-software.hr'
-}
-
 bank = {
     'id': 1,
     'name': 'Lipa po lipa d.d.',
@@ -34,6 +21,7 @@ bank = {
     }
 }
 
+
 currency = {
     'id': 1,
     'name': 'Euro',
@@ -41,9 +29,12 @@ currency = {
     'code': 'EUR'
 }
 
+
 transactions = []
 
-bank_account = {
+
+bank_account = [
+    {
     'id': 1,
     'account_number': '78799812',
     'iban': 'HR45875465481354654',
@@ -52,143 +43,174 @@ bank_account = {
     'bank': bank,
     'currency': currency,
     'transactions': transactions
+    }
+]
+
+company = {
+    'id': 1,
+    'name': 'ABC Software d.o.o.',
+    'tax_id': '01234567890',
+    'hq': {
+        'street': 'Duga ulica 15',
+        'postal_code': '10290',
+        'city': 'Zapresic',
+        'country': 'Hrvatska'
+    },
+    'email': 'info@abc-software.hr',
+    'bank_account': bank_account
 }
+
 
 #endregion
 
 
 #region FUNCTIONS
+def wait_for_user():
+    input('Za nastavak pritisnite ENTER')
+
+
 def clear_screen():
     os.system('clear')
 
 
-
-def payment(bank_account):
-    while True:
-        pay = input('\nUpisite iznos koji zelite uplatiti (ili "exit" za nastavak u main menu): ')
-
-        if pay.lower() == 'exit':
-            print('Uplata otkazana.')
-            return False
-
-        ammount = float(pay)
-        if ammount <= 0:
-            print('Iznos mora biti veci od 0 €, upisi exit za izlazak')
-            continue
-        
-        
-        transaction = {
-                'type': 'UPLATA',
-                'amount': ammount,
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'balance_after': bank_account['balance'] + ammount
-            }
-
-        bank_account[transactions].append(transaction)
+def log_out_screen():
+    print('Pozdrav')
 
 
-        bank_account['balance'] += ammount
-        print(f'Uplaceno: {ammount} EUR | Novo stanje: {bank_account['balance']} EUR')
-        return True
-    
+def get_id(entity: dict) -> None:
+    return entity['id']
 
 
-
-def has_bank_account(company, bank_account):
-    if company['id'] == bank_account['id']:
-        print(f'\nFirma {company['name']} ima bankovni racun.')
-        print(f'Broj racuna je {bank_account['account_number']}\n')
-        if bank_account['balance'] < 500.00:
-            print('Iznos na racunu nije dovoljan:',bank_account['balance'],'€' ' \nPotrebno stanje na racunu je min 500 €')
-            payment(bank_account)
-        else:
-             print(f"Stanje na racunu je dovoljno: {bank_account['balance']} EUR")
-
-        input('Za nastavak pritisnite ENTER')
-    
-
+def company_has_account():
+    if company['bank_account'] == {}:
+        return False
     else:
-        print('Firma nema bankovni racun, potrebno otvoriti racun')
+        return True
+
+
+def display_account_details():
+    pass
+
+
+def key_transform(key: str) -> None:
+    keys = key.split('_')
+    if len(keys) == 1:
+        return keys[0].capitalize()
+    else:
+        text = ''
+        for index, element in enumerate(keys):
+            if index == 0:
+                text += f'{element.capitalize()} '
+            elif index == len(keys) -1:
+                text += f'{element} '
+            else:
+                text += f'{element} '
+        return text
+
+
+def print_dict(dictionary: dict = {}) -> None:
+    if dictionary != {}:
+        for key, value in dictionary.items():
+            key = key_transform(key)
+            
+            if type(value) == dict:
+                print()
+                print(key)
+                print_dict(value)
+            else:
+                row = f'{key:<15} {str(value):<25}'
+                print(row)
     
+    else:
+        print('Rijecnik je prazan')
+
+
+def get_valid_input(prompt: str, valid_options: list) -> int:
+    while True:
+        try:
+            choice = int(input(prompt))
+            if choice in valid_options:
+                return choice
+            else:
+                print(f'Netocan unos, odaberi jednu od opicja {valid_options}')
+        except ValueError:
+            print('Greska, morate unjeti broj')
+
+
+def create_bank_account(bank_account: list) -> dict: 
+    new_id = input('unesi id')
+    iban = input('Unesi IBAN: ')
+    balance = float(input('Unesi početni iznos: '))
+    opening_date = input('Unesi datum otvaranja računa (YYYY-MM-DD): ') 
+
+    new_account = {
+        'id' : new_id,
+        'IBAN' : iban,
+        'balance' : balance,
+        'openinga_date' : opening_date,
+        'bank': bank,
+        'currency': currency,
+        'transactions': []
+
+    }
+
+    bank_account.append(new_account)
+
+    return new_account
 
 
 
-def bank_account_info(bank_account):
-     print(f"IZNOS:{bank_account['balance']}€\nID: {bank_account['id']}\nBroj racuna: {bank_account['account_number']}\nIBAN: {bank_account['iban']}\nDATUM OTVARANJA:{bank_account['opening_date']}\nBANKA: {bank_account['bank']['name']}")
-
-
-
-#endregion
-
-
-#endregion
-
-#region GUI
 def main_menu():
-    while True:
-        print()
-        print(f'{"PYBANK":>25}')
-        print('=' *50)
-        print(f'{"MAIN MENU":>27}')
-        print('=' *50)
+    
+    print()
+    print(f'{"PYBANK":>25}')
+    print('=' *50)
+    print(f'{"MAIN MENU":>27}')
+    print('=' *50)
 
-        print('Izaberi opciju: ')
-        print('1. Prikaz racuna i stanja')
-        print('2. Kreiraj novi racun')
-        print('3. Informacije o racunu')
-        print('4. Prikaz transakcija')
-        print('5. Uplata sredstava')
-        print('6. Isplata sredstava')
-        print('7. Prikaz podataka o vlasniku racuna')
-        print('0. EXIT')
-        
-        menu_item = input('Upisite broj ispred funkcionalnosti koju zelite napraviti: ')
+    print('Izaberi opciju: ')
+    print('1. Prikaz informacija racuna')
+    print('2. Kreiraj novi racun')
+    print('3. Informacije o racunu')
+    print('4. Prikaz transakcija')
+    print('5. Uplata sredstava')
+    print('6. Isplata sredstava')
+    print('7. Prikaz podataka o vlasniku racuna')
+    print('0. EXIT')
 
-        if menu_item.isdigit():
-            return int(menu_item)
-        else:
-            print('Neispravan unos, pokusajte ponovno.')
-            input('Za novi izbor pritisnite ENTER')
-#endregion
+    return get_valid_input('Upisite broj ispred akcije koju zelite pokrenuti: ', list(range(7)))
 
 
-#region MAIN PROGRAM
 def main():
-    has_bank_account(company, bank_account)
-    while True:
+    if company_has_account():
         menu_item = main_menu()
 
         if menu_item == 0:
             return
         elif menu_item == 1:
-            pass
+            print_dict(bank_account)
+            wait_for_user()
         elif menu_item == 2:
-            pass
-        elif menu_item == 3:
-            print()
-            bank_account_info(bank_account)
-            print()
-            input('Za nastavak pritisnite ENTER')
-        elif menu_item == 4:
-            pass
-        elif menu_item == 5:
-            print()
-            payment(bank_account)
-            print()
-            input('Za nastavak pritisnite ENTER')
+            create_bank_account(bank_account)
+            wait_for_user
 
-            
-        
-
-        
+    else:
+        print('Pokrenu funkciju za otvaranje racuna')
+        create_bank_account(bank_account)
+        wait_for_user()
 
 
+#endregion
+
+
+#region MAIN PROGRAM
 if __name__ == '__main__':
     main()
 #endregion
 
+
 #region END PROGRAM
-print()
-print('Hvala i dovidjenja')
-print()
+clear_screen()
+log_out_screen()
+wait_for_user()
 #endregion
