@@ -26,7 +26,8 @@ id; date_time; amount; currency; bank_account; transaction_type [withdraw, depos
 '''
 
 
-bank_account = {
+bank_account = [
+    {
     'id': 1,
     'IBAN': 'HR45875465481354654',
     'balance': 0.00,
@@ -34,8 +35,8 @@ bank_account = {
     'bank': bank,
     'currency': currency,
     'transactions': transactions
-}
-
+    }
+]
 
 company = {
     'id': 1,
@@ -52,37 +53,50 @@ company = {
 }
 
 #endregion
-def transform_key(key: str) -> None:
-    keys = key.split('_')
-    if len(keys) == 1:
-        return keys[0].capitalize() 
+
+def create_bank_account(bank_account: list) -> dict:
+    if bank_account:
+        new_id = bank_account[-1]['id'] +1
     else:
-        text = ''
-        for index, element in enumerate(keys):
-            if index == 0:
-                text += f'{element.capitalize()} '
-            elif index == len(keys) - 1:
-                text += f'{element} '
-            else:
-                text += f'{element} '
-        return text
+        new_id = 1
+    
+    iban = input('Unesi IBAN: ')
+    balance = float(input('Unesi početni iznos: '))
+    opening_date = input('Unesi datum otvaranja računa (YYYY-MM-DD): ') 
+
+    new_account = {
+        'id' : new_id,
+        'IBAN' : iban,
+        'balance' : balance,
+        'openinga_date' : opening_date,
+        'bank': bank,
+        'currency': currency,
+        'transactions': []
+
+    }
+
+    bank_account.append(new_account)
+
+    return new_account
 
 
-def print_dict(dictionary: dict = {}) -> None:
-    if dictionary != {}:
-        for key, value in dictionary.items():
-            key = transform_key(key)
+   
+            
+            
+         
+        
+create_bank_account(bank_account)
+print(bank_account)
 
-            if type(value) == dict:
-                print()
-                print(key)
-                print_dict(value)
-            else:   
-                row = f'{key:<15} {str(value):<25}'
-                print(row)
+                
+                
+       
 
-    else:
-        print('Rijecnik nema niti jedan element. ')
+    
+
+   
+
+  
 
 
-print_dict(company)
+
