@@ -106,6 +106,7 @@ def main_menu():
 def display_account_details():
     pass
 
+
 def transform_key(key: str) -> None:
     keys = key.split('_')
     if len(keys) == 1:
