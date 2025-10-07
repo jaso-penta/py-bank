@@ -33,7 +33,7 @@ currency = {
 transactions = []
 
 
-bank_account = [
+bank_accounts = [
     {
     'id': 1,
     'account_number': '78799812',
@@ -57,9 +57,10 @@ company = {
         'country': 'Hrvatska'
     },
     'email': 'info@abc-software.hr',
-    'bank_account': bank_account
+    'bank_account': bank_accounts
 }
 
+MIN_DEPOSIT = 100.00
 
 #endregion
 
@@ -90,6 +91,48 @@ def company_has_account():
 
 def display_account_details():
     pass
+
+
+def create_bank_account(bank_account: list, bank, currency) -> dict: 
+    while True:
+        try:
+            deposit = float(input(f'Unesite pocetni depozit {MIN_DEPOSIT:.2f} {currency['code']}: ').strip())
+        except ValueError:
+            print('Neispravan unos, pokusajte ponovno. ')
+            continue
+
+        if deposit < MIN_DEPOSIT:
+            print(f'Pocetni depozit mora biti minimalno {MIN_DEPOSIT:.2f} {currency['code']}. Pokusajte ponovno')
+        else:
+            break
+
+        today = datetime.now().strftime('%Y-%M-%D-%H:%M:%S')
+
+        if bank_account:
+            new_id = bank_account[-1]['id'] + 1
+        else:
+            new_id = 1
+        
+        new_account = {
+            'id': new_id,
+            'company':  company['name'],
+            'iban': bank_accounts['iban'],
+            'bank': bank,
+            'balance': deposit,
+            'currency': currency['code'],
+            'created_at': today,
+            'transactions': transactions
+        }
+        
+
+        bank_accounts.append(new_account)
+
+
+        next_account = input('Zelite li unijeti novi kontakt? (Da/Ne): ')
+        if next_account.lower() != 'da':
+            return
+
+        return new_account
 
 
 def key_transform(key: str) -> None:
@@ -125,6 +168,17 @@ def print_dict(dictionary: dict = {}) -> None:
         print('Rijecnik je prazan')
 
 
+def print_list_of_dicts(data_list: list) -> None:
+    if not data_list:
+        print('Lista je prazna')
+        return
+    
+    for index, dictionary in enumerate(data_list, 1):
+        print(f'\n')
+        print(f'{index}')
+        print_dict(dictionary)
+
+
 def get_valid_input(prompt: str, valid_options: list) -> int:
     while True:
         try:
@@ -137,26 +191,31 @@ def get_valid_input(prompt: str, valid_options: list) -> int:
             print('Greska, morate unjeti broj')
 
 
-def create_bank_account(bank_account: list) -> dict: 
-    new_id = input('unesi id')
-    iban = input('Unesi IBAN: ')
-    balance = float(input('Unesi početni iznos: '))
-    opening_date = input('Unesi datum otvaranja računa (YYYY-MM-DD): ') 
 
-    new_account = {
-        'id' : new_id,
-        'IBAN' : iban,
-        'balance' : balance,
-        'openinga_date' : opening_date,
-        'bank': bank,
-        'currency': currency,
-        'transactions': []
 
-    }
 
-    bank_account.append(new_account)
+def deposit(bank_account):
+    for i, account in enumerate(bank_account, 1):
+        print(f'{i}. IBAN: {account['iban']}, Stanje: {account['balance']}')
+    
+    choice = int(input('Odaberite broj racuna: ')) - 1
+    account = bank_account[choice]
 
-    return new_account
+    deposit = float(input('Koliko novca zelite uplatit? '))
+    account['balance'] += deposit
+
+    transactions.append({
+        'amount': deposit,
+        'type': 'Uplata',
+        'date': datetime.now()
+    })
+
+
+def print_transactions(transactions):
+
+
+
+
 
 
 
@@ -171,33 +230,39 @@ def main_menu():
     print('Izaberi opciju: ')
     print('1. Prikaz informacija racuna')
     print('2. Kreiraj novi racun')
-    print('3. Informacije o racunu')
-    print('4. Prikaz transakcija')
-    print('5. Uplata sredstava')
-    print('6. Isplata sredstava')
-    print('7. Prikaz podataka o vlasniku racuna')
+    print('3. Prikaz transakcija')
+    print('4. Uplata sredstava')
+    print('5. Isplata sredstava')
+    print('6. Prikaz podataka o vlasniku racuna')
     print('0. EXIT')
 
-    return get_valid_input('Upisite broj ispred akcije koju zelite pokrenuti: ', list(range(7)))
+    return get_valid_input('Upisite broj ispred akcije koju zelite pokrenuti: ', list(range(6)))
 
 
 def main():
-    if company_has_account():
-        menu_item = main_menu()
+    while True:
+        if company_has_account():
+            menu_item = main_menu()
 
-        if menu_item == 0:
-            return
-        elif menu_item == 1:
-            print_dict(bank_account)
+            if menu_item == 0:
+                return
+            elif menu_item == 1:
+                print_list_of_dicts(bank_accounts)
+                wait_for_user()
+            elif menu_item == 2:
+                create_bank_account(bank_accounts, bank, currency)
+                wait_for_user
+            elif menu_item == 3:
+                print_dict(transactions)
+                wait_for_user()
+            elif menu_item == 4:
+                deposit(bank_accounts)
+                wait_for_user()
+
+        else:
+            print('Pokrenu funkciju za otvaranje racuna')
+            create_bank_account(bank_accounts)
             wait_for_user()
-        elif menu_item == 2:
-            create_bank_account(bank_account)
-            wait_for_user
-
-    else:
-        print('Pokrenu funkciju za otvaranje racuna')
-        create_bank_account(bank_account)
-        wait_for_user()
 
 
 #endregion
