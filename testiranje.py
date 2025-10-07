@@ -1,3 +1,4 @@
+from datetime import datetime
 #region INIT DATA
 
 bank = {
@@ -52,51 +53,42 @@ company = {
     'bank_account': bank_account
 }
 
-#endregion
 
-def create_bank_account(bank_account: list) -> dict:
-    if bank_account:
-        new_id = bank_account[-1]['id'] +1
+
+
+def print_dict(data, indent=0) -> None:
+    """
+    Rekurzivno ispisuje sadržaj rječnika ili liste rječnika s uvlakama.
+    """
+    space = "  " * indent  # određuje razinu uvlake
+    
+    if isinstance(data, list):
+        if not data:
+            print(space + "Prazna lista.")
+            return
+        for item in data:
+            if isinstance(item, (dict, list)):
+                print_dict(item, indent)
+                print(space + "-" * 40)
+            else:
+                print(space + str(item))
+    
+    elif isinstance(data, dict):
+        if not data:
+            print(space + "Rječnik nema niti jedan element.")
+            return
+        for key, value in data.items():
+            if isinstance(value, dict):
+                print(f"{space}{key}:")
+                print_dict(value, indent + 1)
+            elif isinstance(value, list):
+                print(f"{space}{key}:")
+                print_dict(value, indent + 1)
+            else:
+                print(f"{space}{key:<15} {str(value):<25}")
     else:
-        new_id = 1
-    
-    iban = input('Unesi IBAN: ')
-    balance = float(input('Unesi početni iznos: '))
-    opening_date = input('Unesi datum otvaranja računa (YYYY-MM-DD): ') 
-
-    new_account = {
-        'id' : new_id,
-        'IBAN' : iban,
-        'balance' : balance,
-        'openinga_date' : opening_date,
-        'bank': bank,
-        'currency': currency,
-        'transactions': []
-
-    }
-
-    bank_account.append(new_account)
-
-    return new_account
-
-
-   
-            
-            
-         
-        
-create_bank_account(bank_account)
-print(bank_account)
-
-                
-                
-       
-
-    
-
-   
-
-  
+        print(space + str(data))
 
 
 
+print_dict(bank_account)
