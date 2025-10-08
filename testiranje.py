@@ -27,7 +27,7 @@ id; date_time; amount; currency; bank_account; transaction_type [withdraw, depos
 '''
 
 
-bank_account = [
+bank_accounts = [
     {
     'id': 1,
     'IBAN': 'HR45875465481354654',
@@ -50,45 +50,64 @@ company = {
         'country': 'Hrvatska'
     },
     'email': 'info@abc-software.hr',
-    'bank_account': bank_account
+    'bank_account': bank_accounts
 }
 
+MIN_DEPOSIT = 100.00
 
 
-
-def print_dict(data, indent=0) -> None:
-    """
-    Rekurzivno ispisuje sadržaj rječnika ili liste rječnika s uvlakama.
-    """
-    space = "  " * indent  # određuje razinu uvlake
-    
-    if isinstance(data, list):
-        if not data:
-            print(space + "Prazna lista.")
-            return
-        for item in data:
-            if isinstance(item, (dict, list)):
-                print_dict(item, indent)
-                print(space + "-" * 40)
+def display_account_details(accounts:list):
+    for account in accounts:
+        for key, value in account.items():
+            if type(value) == dict:
+                print(f'\n{key.upper()}')
+                for sub_key, sub_value in value.items():
+                    if type(sub_value) == dict:
+                        print(f'    {sub_key.upper()}')
+                        for sub_sub_key, sub_sub_value in sub_value.items():
+                            print(f"        {sub_sub_key.upper()}: {sub_sub_value}")
+                    else:
+                      print(f'{sub_key}: {sub_value}')
             else:
-                print(space + str(item))
+                print(f"{key}: {value}")
+
+# display_account_details(bank_accounts)
+
+
+def create_bank_account():
+    while True:
+        try:
+            deposit = float(input(f'Unesite iznos, minimalni iznos je {MIN_DEPOSIT} {currency["code"]}: '))
+        except ValueError:
+            print('Neispravan unos, pokusajte ponovno. ')
+            continue
+
+        if deposit < MIN_DEPOSIT:
+             print(f'Iznos nije dovoljan, minimalni deposit je {MIN_DEPOSIT}')
+        else:
+            break
+
+    today = datetime.now().strftime('$A %d.%m.%Y')
+    new_id = bank_accounts[-1]['id'] + 1
+
+
+    account = {}
+    account['id'] = new_id
+    account['iban'] = input('Unesite IBAN ')
+    account['balance']= deposit
+    account['opening_date']= today
+    account['bank'] = bank
+    account['currency'] = currency
+    account['transactions'] = transactions
+
+    bank_accounts.append(account)
     
-    elif isinstance(data, dict):
-        if not data:
-            print(space + "Rječnik nema niti jedan element.")
-            return
-        for key, value in data.items():
-            if isinstance(value, dict):
-                print(f"{space}{key}:")
-                print_dict(value, indent + 1)
-            elif isinstance(value, list):
-                print(f"{space}{key}:")
-                print_dict(value, indent + 1)
-            else:
-                print(f"{space}{key:<15} {str(value):<25}")
-    else:
-        print(space + str(data))
+    next_account = input('Zelite li unijeti novi kontakt? (Da/Ne): ')
+    if next_account.lower() != 'da':
+        return
+
+    return account
+        
 
 
-
-print_dict(bank_account)
+create_bank_account()

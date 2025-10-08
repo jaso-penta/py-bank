@@ -89,50 +89,50 @@ def company_has_account():
         return True
 
 
-def display_account_details():
-    pass
+def display_account_details(account:dict):
+    for account in bank_accounts:
+        for key, value in account.items(account):
+            if type(key) == dict:
+                print(key)
+                print(value)
+            else:
+                print(f'{key} {value}')
 
 
-def create_bank_account(bank_account: list, bank, currency) -> dict: 
+def create_bank_account():
     while True:
         try:
-            deposit = float(input(f'Unesite pocetni depozit {MIN_DEPOSIT:.2f} {currency['code']}: ').strip())
+            deposit = float(input(f'Unesite iznos, minimalni iznos je {MIN_DEPOSIT} {currency["code"]}: '))
         except ValueError:
             print('Neispravan unos, pokusajte ponovno. ')
             continue
 
         if deposit < MIN_DEPOSIT:
-            print(f'Pocetni depozit mora biti minimalno {MIN_DEPOSIT:.2f} {currency['code']}. Pokusajte ponovno')
+             print(f'Iznos nije dovoljan, minimalni deposit je {MIN_DEPOSIT}')
         else:
             break
 
-        today = datetime.now().strftime('%Y-%M-%D-%H:%M:%S')
+    today = datetime.now().strftime('$A %d.%m.%Y')
+    new_id = bank_accounts[-1]['id'] + 1
 
-        if bank_account:
-            new_id = bank_account[-1]['id'] + 1
-        else:
-            new_id = 1
+
+    account = {}
+    account['id'] = new_id
+    account['iban'] = input('Unesite IBAN ')
+    account['balance']= deposit
+    account['opening_date']= today
+    account['bank'] = bank
+    account['currency'] = currency
+    account['transactions'] = transactions
+
+    bank_accounts.append(account)
+    
+    next_account = input('Zelite li unijeti novi kontakt? (Da/Ne): ')
+    if next_account.lower() != 'da':
+        return
+
+    return account
         
-        new_account = {
-            'id': new_id,
-            'company':  company['name'],
-            'iban': bank_accounts['iban'],
-            'bank': bank,
-            'balance': deposit,
-            'currency': currency['code'],
-            'created_at': today,
-            'transactions': transactions
-        }
-        
-
-        bank_accounts.append(new_account)
-
-
-        next_account = input('Zelite li unijeti novi kontakt? (Da/Ne): ')
-        if next_account.lower() != 'da':
-            return
-
-        return new_account
 
 
 def key_transform(key: str) -> None:
@@ -188,7 +188,7 @@ def get_valid_input(prompt: str, valid_options: list) -> int:
             else:
                 print(f'Netocan unos, odaberi jednu od opicja {valid_options}')
         except ValueError:
-            print('Greska, morate unjeti broj')
+            1
 
 
 
