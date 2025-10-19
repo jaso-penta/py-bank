@@ -1,6 +1,6 @@
 #region IMPORTS
 import os
-
+import json
 #endregion
 
 
@@ -87,9 +87,6 @@ def company_has_account():
         return True
 
 
-def create_bank_account():
-    with open(data, 'a') as save_file:
-        save_file.load
 
 def main_menu():
     clear_screen()

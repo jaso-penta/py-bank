@@ -3,7 +3,9 @@
 import os
 from posixpath import ismount
 from datetime import datetime
+import json
 
+DATA_PATH = 'data_sample/new_bank_account.txt'
 
 bank = {
     'id': 1,
@@ -42,15 +44,44 @@ company = {
         'country': 'Hrvatska'
     },
     'email': 'info@abc-software.hr',
-    'bank_account': bank_accounts
+    'bank_account': DATA_PATH
 }
 
 MIN_DEPOSIT = 100.00
-
 #endregion
 
 
 #region FUNCTIONS
+def save_to_json(data: list):
+    try:
+        with open(DATA_PATH, 'w') as file_writer:
+            json.dump(data, file_writer, indent=4)
+
+    except Exception as ex:
+        print(f'{ex}')   
+
+
+
+def json_id_counter():
+    # Load JSON file
+    try:
+        with open(DATA_PATH, 'r') as file_reader:
+            data = json.load(file_reader)
+            return data
+    except Exception as x:
+        data = []
+        print(f'Doslo je do pogreske {x}')
+    #Find bigest ID
+    if data:
+        max_id = max(item['id'] for item in data)
+    else:
+        max_id = 0
+    return max_id + 1
+    
+   
+
+
+
 def wait_for_user():
     input('Za nastavak pritisnite ENTER')
 
@@ -104,7 +135,7 @@ def display_account_details(accounts:list):
                 print(f"{key}: {value}")
 
 
-def create_bank_account(account):
+def create_bank_account(bank_accounts):
     while True:
         try:
             deposit = float(input(f'Unesite iznos, minimalni iznos je {MIN_DEPOSIT} {currency["code"]}: '))
@@ -118,26 +149,32 @@ def create_bank_account(account):
             break
 
     today = datetime.now().strftime('$A %d.%m.%Y')
+   
+
+
+
+    new_account = {
+        'id': json_id_counter(),   # <-- ovdje
+        'iban': input('Unesite IBAN: '),
+        'balance': deposit,
+        'opening_date': today,
+        'bank': bank,
+        'currency': currency,
+        'transactions': transactions.copy()
+}
+
+
+    bank_accounts.append(new_account)
+    save_to_json(new_account)
     
-
-
-    account = {}
-    account['id'] = input('Unesi ID: ')
-    account['iban'] = input('Unesite IBAN ')
-    account['balance']= deposit
-    account['opening_date']= today
-    account['bank'] = bank
-    account['currency'] = currency
-    account['transactions'] = transactions
-
-    bank_accounts.append(account)
+    
     print()
     next_account = input('Zelite li unijeti novi kontakt? (Da/Ne): ')
     print()
     if next_account.lower() != 'da':
         return
 
-    return account
+    return bank_accounts
 
 
 def in_deposit(bank_accounts: list, transactions: list):

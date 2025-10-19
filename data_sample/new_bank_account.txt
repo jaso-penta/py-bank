@@ -1,0 +1,45 @@
+{
+    "id": {
+        "id": 1,
+        "iban": "12344",
+        "balance": 100.0,
+        "opening_date": "$A 08.10.2025",
+        "bank": {
+            "id": 1,
+            "name": "Lipa po lipa d.d.",
+            "hq": {
+                "street": "Kratka ulica 5",
+                "postal_code": "10290",
+                "city": "Zapresic",
+                "country": "Hrvatska"
+            }
+        },
+        "currency": {
+            "id": 1,
+            "name": "Euro",
+            "symbol": "\u20ac",
+            "code": "EUR"
+        },
+        "transactions": []
+    },
+    "iban": "1234",
+    "balance": 200.0,
+    "opening_date": "$A 08.10.2025",
+    "bank": {
+        "id": 1,
+        "name": "Lipa po lipa d.d.",
+        "hq": {
+            "street": "Kratka ulica 5",
+            "postal_code": "10290",
+            "city": "Zapresic",
+            "country": "Hrvatska"
+        }
+    },
+    "currency": {
+        "id": 1,
+        "name": "Euro",
+        "symbol": "\u20ac",
+        "code": "EUR"
+    },
+    "transactions": []
+}
